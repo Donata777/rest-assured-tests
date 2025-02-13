@@ -4,8 +4,6 @@ package org.example.api;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.example.store.Order;
@@ -35,15 +33,11 @@ public class HomeTaskApiTest {
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
 
         RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setBaseUri("https://petstore.swagger.io/v2/")
+                .setBaseUri(System.getProperty("base.uri"))
                 .addHeader("api_key", System.getProperty("api.key"))
                 .setAccept(ContentType.JSON)
                 .setContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
                 .build();
-
-        RestAssured.filters(new ResponseLoggingFilter());
-
     }
 
     @Test
@@ -62,7 +56,7 @@ public class HomeTaskApiTest {
         order.setStatus(status);
         order.setComplete(true);
 
-        LOGGER.info("Создаем заказ: {}", order);
+        LOGGER.info("Создаю заказ: {}", order);
 
         orderId = id;
 
@@ -75,7 +69,7 @@ public class HomeTaskApiTest {
 
         LOGGER.info("Заказ {} успешно создан", id);
 
-        LOGGER.info("Получаем заказ {} и сравниваем значения полей из POST и GET запросов", id);
+        LOGGER.info("Получаю заказ {} и сравниваю значения полей из POST и GET запросов", id);
 
         Order actual =
                 given()
@@ -103,7 +97,7 @@ public class HomeTaskApiTest {
     @Test
     public void testDelete() {
 
-        LOGGER.info("Удаляем заказ {}", orderId);
+        LOGGER.info("Удаляю заказ {}", orderId);
 
         given()
                 .pathParam("orderId",orderId)
@@ -112,7 +106,7 @@ public class HomeTaskApiTest {
                 .then()
                 .statusCode(200);
 
-        LOGGER.info("Отправляем GET запрос для проверки удаления заказа {}", orderId);
+        LOGGER.info("Отправляю GET запрос для проверки удаления заказа {}", orderId);
 
         //Проверяем, что заказ удален
         int statusCode = given()
@@ -131,7 +125,7 @@ public class HomeTaskApiTest {
     @Test
     public void testInventoryResponse() {
 
-        LOGGER.info("Отправляем GET запрос на /store/inventory");
+        LOGGER.info("Отправляю GET запрос на /store/inventory");
 
         Response response = given()
                 .when()
